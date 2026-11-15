@@ -1,0 +1,211 @@
+import { ProjectStatus, TransactionType } from "@prisma/client";
+
+export type Role = 'ADMIN' | 'PHARMACIST' | 'CASHIER';
+export type productStatus = 'ACTIVE' | 'DISCONTINUED';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'PARTIALLY_PAID' | 'REFUNDED';
+export type PaymentMethod = 'CASH' | 'CARD' | 'UPI' | 'OTHER';
+
+// export interface Batch {
+//   id: number;
+//   productId: number;
+//   batchNumber: string;
+//   expiryDate: string;
+//   purchasePrice: string;
+//   sellingPrice: string;
+//   quantityAvailable: number;
+//   version: number;
+//   product?: product;
+// }
+
+// model Transaction {
+//   id          String @id @default (cuid())
+//   type TransactionType
+//   amount      Float
+//   description String ?
+//     category    String ?
+//       status      PaymentStatus @default (PAID)
+//   date        DateTime @default (now())
+
+//   customer   Customer ? @relation(fields: [customerId], references: [id])
+//   customerId String ?
+
+//     createdAt DateTime @default (now())
+//   updatedAt DateTime @updatedAt
+//   project   Project ? @relation(fields: [projectId], references: [id])
+//   projectId String ?
+// }
+
+export interface Project {
+  id: string,
+  name: string,
+  type: string,
+  customer: { id: string, name: string },
+  notes: string
+  projectAmount: number
+  unPaid?: number
+  status: ProjectStatus
+}
+
+export interface Payment {
+  id: string;
+  type: TransactionType;
+  amount: number;
+  description: string;
+  customer: { id: string; name: string }
+  project: { id: string; name: string }
+  createdAt: string;
+}
+export type Expense = {
+  id: string
+  title: string
+  amount: number
+  category: string | null
+  description: string | null
+  date: string
+}
+
+export interface Customer {
+  id: string;
+
+}
+export interface Batch {
+  id: number;
+  productId: number;
+  batchNumber: string;
+  expiryDate: string;
+  purchasePrice: string;
+  sellingPrice: string;
+  quantityAvailable: number;
+  location?: string | null;   // add this
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+}
+
+export interface product {
+  id: number;
+  name: string;
+  manufacturer: string;
+  category: string | null;
+  barcode: string | null;
+  hsnCode: string;
+  gstPercentage: string;
+  gstType: 'INCLUSIVE' | 'EXCLUSIVE';
+  prescriptionRequired: boolean;
+  status: productStatus;
+  mrp: number;
+  cp: number;
+  sp: number;
+  genericName?: string;
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  batches: Batch[];
+  totalStock?: number;
+}
+
+export interface BillItem {
+  id: number;
+  productId: number;
+  batchId: number;
+  batchNumber: string;
+  quantity: number;
+  unitPrice: string;
+  gstPercentage: string;
+  cgstAmount: string;
+  sgstAmount: string;
+  igstAmount: string;
+  gstAmount: string;
+  totalAmount: string;
+  product?: product;
+}
+
+// export interface Bill {
+//   id: number;
+//   billNumber: string;
+//   billDate: string;
+//   cashierId: number;
+//   customerName: string | null;
+//   customerPhone: string | null;
+//   customerGstin: string | null;
+//   ipOp: string | null;
+//   doctorId: number | null;
+//   hospitalId: number | null;
+//   isInterState: boolean;
+//   subtotal: string;
+//   totalCgst: string;
+//   totalSgst: string;
+//   totalIgst: string;
+//   totalGst: string;
+//   totalAmount: string;
+//   paymentStatus: PaymentStatus;
+//   billItems: BillItem[];
+//   payments?: { id: number; amount: string; method: PaymentMethod; paidAt: string }[];
+//   cashier?: AppUser;
+// }
+export interface Bill {
+  id: number;
+  billNumber: string;
+  billDate: string;
+  cashierId: number;
+  customerId: number | null;
+  customer?: {
+    id: number;
+    name: string;
+    phone: string | null;
+    email: string | null;
+    address: string | null;
+    gstin: string | null;
+  } | null;
+  ipOp: string | null;
+  doctorId: number | null;
+  hospitalId: number | null;
+  isInterState: boolean;
+  subtotal: string;
+  totalCgst: string;
+  totalSgst: string;
+  totalIgst: string;
+  totalGst: string;
+  totalAmount: string;
+  paymentStatus: PaymentStatus;
+  billItems: BillItem[];
+  payments?: { id: number; amount: string; method: PaymentMethod; paidAt: string }[];
+  cashier?: AppUser;
+  doctor?: { id: number; name: string; specialization: string | null; phone: string | null } | null;
+  hospital?: { id: number; name: string; address: string | null; phone: string | null } | null;
+}
+
+export interface Doctor {
+  id: number;
+  name: string;
+  registrationNo: string | null;
+  specialization: string | null;
+  phone: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Hospital {
+  id: number;
+  name: string;
+  address: string | null;
+  phone: string | null;
+  gstin: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AppUser {
+  id: number;
+  username: string;
+  fullName: string;
+  role: Role;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
